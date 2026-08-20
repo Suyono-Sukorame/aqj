@@ -42,6 +42,25 @@ pub enum AqjError {
 
     #[error("Build error: {0}")]
     BuildError(String),
+
+    #[error("Unsatisfied dependency: package '{package}' requires '{dependency}' which could not be resolved")]
+    UnsatisfiedDependency {
+        package: String,
+        dependency: String,
+    },
+
+    #[error("Circular dependency detected: {chain}")]
+    CircularDependency {
+        chain: String,
+    },
+
+    #[error("Dependency version conflict: package '{package}' requires '{dependency}' with constraint '{constraint}', but found version '{found}'")]
+    DependencyConflict {
+        package: String,
+        dependency: String,
+        constraint: String,
+        found: String,
+    },
 }
 
 pub type Result<T> = std::result::Result<T, AqjError>;
