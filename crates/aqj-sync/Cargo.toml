@@ -1,0 +1,14 @@
+[package]
+name = "aqj-sync"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+aqj-core = { path = "../aqj-core" }
+clap = { workspace = true }
+anyhow = { workspace = true }
+env_logger = { workspace = true }
+log = { workspace = true }

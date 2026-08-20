@@ -22,10 +22,10 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Install a binary package (.aqj)
+    /// Install a binary package (.aqj file) or a package by name from a repository
     Install {
-        /// Path to .aqj package file
-        package_file: PathBuf,
+        /// Path to .aqj package file, OR a package name to fetch from repository
+        package: String,
     },
     /// Remove an installed package
     Remove {
@@ -66,6 +66,33 @@ enum Commands {
         /// Work/build directory
         #[arg(short, long, default_value = "build/work")]
         work_dir: PathBuf,
+
+        /// Local recipe repository directory (for dependency resolution)
+        #[arg(short, long, default_value = "aqj-packages/pkgs")]
+        repo_dir: PathBuf,
+    },
+    /// Sync and manage remote package repository indexes
+    Sync {
+        #[command(subcommand)]
+        action: SyncAction,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum SyncAction {
+    /// Download and refresh indexes from all configured repositories
+    Update,
+    /// List all configured repositories
+    List,
+    /// Search packages by name or description
+    Search {
+        /// Search query string
+        query: String,
+    },
+    /// Show detailed info for a package from the remote index
+    Info {
+        /// Package name
+        package: String,
     },
 }
 
@@ -110,11 +137,11 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Install { package_file } => {
+        Commands::Install { package } => {
             let status = std::process::Command::new("aqj-install")
                 .arg("--root")
                 .arg(&cli.root)
-                .arg(&package_file)
+                .arg(&package)
                 .status()?;
             std::process::exit(status.code().unwrap_or(1));
         }
@@ -137,7 +164,7 @@ fn main() -> Result<()> {
             let status = cmd.status()?;
             std::process::exit(status.code().unwrap_or(1));
         }
-        Commands::Src { target, output_dir, work_dir } => {
+        Commands::Src { target, output_dir, work_dir, repo_dir } => {
             let status = std::process::Command::new("aqj-src")
                 .arg("build")
                 .arg(&target)
@@ -145,7 +172,20 @@ fn main() -> Result<()> {
                 .arg(&output_dir)
                 .arg("--work-dir")
                 .arg(&work_dir)
+                .arg("--repo-dir")
+                .arg(&repo_dir)
                 .status()?;
+            std::process::exit(status.code().unwrap_or(1));
+        }
+        Commands::Sync { action } => {
+            let mut cmd = std::process::Command::new("aqj-sync");
+            match action {
+                SyncAction::Update => { cmd.arg("update"); }
+                SyncAction::List => { cmd.arg("list"); }
+                SyncAction::Search { query } => { cmd.arg("search").arg(query); }
+                SyncAction::Info { package } => { cmd.arg("info").arg(package); }
+            }
+            let status = cmd.status()?;
             std::process::exit(status.code().unwrap_or(1));
         }
     }

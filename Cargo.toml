@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "crates/aqj-core",
     "crates/aqj-src",
+    "crates/aqj-sync",
     "crates/aqj-install",
     "crates/aqj-remove",
     "crates/aqj-query",

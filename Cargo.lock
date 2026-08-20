@@ -96,6 +96,7 @@ dependencies = [
  "tar",
  "thiserror",
  "toml",
+ "ureq",
  "walkdir",
  "zstd",
 ]
@@ -149,6 +150,17 @@ dependencies = [
  "toml",
  "ureq",
  "zstd",
+]
+
+[[package]]
+name = "aqj-sync"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "aqj-core",
+ "clap",
+ "env_logger",
+ "log",
 ]
 
 [[package]]

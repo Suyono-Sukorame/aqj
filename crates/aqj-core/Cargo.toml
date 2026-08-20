@@ -16,3 +16,4 @@ walkdir.workspace = true
 anyhow.workspace = true
 thiserror.workspace = true
 log.workspace = true
+ureq.workspace = true

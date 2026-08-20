@@ -61,6 +61,37 @@ pub enum AqjError {
         constraint: String,
         found: String,
     },
+
+    // ── Repository & Network Errors ───────────────────────────────────────────
+
+    #[error("Repository '{0}' is not configured")]
+    RepoNotFound(String),
+
+    #[error("Failed to sync repository '{name}' from '{url}': {message}")]
+    RepoSyncFailed {
+        name: String,
+        url: String,
+        message: String,
+    },
+
+    #[error("Package '{0}' was not found in any configured repository")]
+    PackageNotInRepo(String),
+
+    #[error("Failed to download package from '{url}': {message}")]
+    DownloadFailed {
+        url: String,
+        message: String,
+    },
+
+    #[error("Checksum mismatch after downloading '{url}': expected {expected}, got {actual}")]
+    ChecksumMismatchRemote {
+        url: String,
+        expected: String,
+        actual: String,
+    },
+
+    #[error("Repository configuration error: {0}")]
+    ConfigError(String),
 }
 
 pub type Result<T> = std::result::Result<T, AqjError>;
