@@ -3,85 +3,85 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Language: Rust](https://img.shields.io/badge/Language-Rust-orange.svg)](https://www.rust-lang.org/)
 
-**AQJ** adalah sistem manajemen paket modular, efisien, dan cepat yang terinspirasi oleh XBPS, dikembangkan dengan bahasa pemrogaman Rust. System ini didesain untuk kompilasi paket dari resep (recipe-based source build engine), manajemen database lokal, instalasi, dan penghapusan paket secara terstruktur.
+**AQJ** is a modular, fast, and efficient package management system inspired by XBPS and built with Rust. It features a recipe-based source build engine, local database tracking, archive management, and CLI utilities for installing, querying, and removing packages.
 
 ---
 
-## 🚀 Fitur Utama
+## 🚀 Key Features
 
-- **Arsitektur Modular**: Terbagi menjadi crate terpisah (`core`, `src`, `install`, `remove`, `query`, dan `cli` wrapper).
-- **Format Resep TOML**: Penulisan instruksi build paket yang deklaratif dan mudah dibaca menggunakan `template.toml`.
-- **Pengarsipan & Kompresi Cepat**: Mendukung format arsip tarball yang dikompresi dengan `zstd` / `gzip`.
-- **Database Lokal Terstruktur**: Pelacakan metadata paket yang terinstall beserta checksum SHA-256 daftar file.
-- **Antarmuka CLI Terpadu**: CLI utama (`aqj`) yang membungkus sub-perintah manajemen paket.
+- **Modular Architecture**: Structured as a Rust workspace with dedicated crates (`core`, `src`, `install`, `remove`, `query`, and a unified `cli` wrapper).
+- **TOML Recipe Format**: Declarative and human-readable package recipes using `template.toml`.
+- **Fast Archiving & Compression**: Support for tarball archives compressed with `zstd` / `gzip`.
+- **Structured Local Database**: Tracks installed packages, metadata, and file lists with SHA-256 checksums.
+- **Unified CLI Interface**: Main `aqj` executable unifying package management subcommands.
 
 ---
 
-## 🧱 Struktur Workspace (Crates)
+## 🧱 Workspace Crates
 
-Project ini disusun sebagai sebuah Rust workspace yang terdiri dari beberapa sub-crate:
+This repository is organized as a Cargo workspace with the following crates:
 
-| Crate | Deskripsi |
+| Crate | Description |
 |---|---|
-| `crates/aqj-core` | Library inti yang menangani database JSON, pengarsipan, metadata, dan hashing SHA-256. |
-| `crates/aqj-cli` | Pembungkus CLI utama (`aqj`) untuk memanggil fungsi installer, builder, remover, dan query. |
-| `crates/aqj-src` | Engine pembuat paket yang membaca resep `template.toml`, mengunduh source, mengompilasi, dan membuat file arsip `.aqj`. |
-| `crates/aqj-install` | Utility untuk meng-ekstrak dan mendaftarkan arsip `.aqj` ke database sistem. |
-| `crates/aqj-remove` | Utility untuk menghapus file yang terinstall dan memperbarui database. |
-| `crates/aqj-query` | Utility untuk menampilkan daftar dan informasi detail paket yang terinstall. |
+| `crates/aqj-core` | Core library handling database storage, archive creation/extraction, metadata, and SHA-256 hashing. |
+| `crates/aqj-cli` | Primary CLI wrapper (`aqj`) interfacing with builder, installer, uninstaller, and query tools. |
+| `crates/aqj-src` | Recipe build engine that parses `template.toml`, fetches sources, compiles, and packages binary `.aqj` archives. |
+| `crates/aqj-install` | Installer utility to unpack `.aqj` package archives and register files into the local system database. |
+| `crates/aqj-remove` | Uninstaller utility to safely remove installed package files and update the database. |
+| `crates/aqj-query` | Query tool to list, search, and inspect details of installed packages. |
 
 ---
 
-## 💻 Cara Penggunaan
+## 💻 Usage
 
-### 1. Kompilasi & Build Project
+### 1. Build from Source
 
-Pastikan Anda telah menginstall toolchain Rust (`cargo` & `rustc`).
+Ensure you have the Rust toolchain (`cargo` & `rustc`) installed.
 
 ```bash
-# Clone repository
+# Clone the repository
 git clone https://github.com/Suyono-Sukorame/aqj.git
 cd aqj
 
-# Build seluruh workspace dalam mode release
+# Build all workspace crates in release mode
 cargo build --release
 ```
 
-Hasil binary akan berada di folder `target/release/aqj`.
+The compiled binaries will be located under `target/release/`.
 
 ---
 
-### 2. Perintah CLI `aqj`
+### 2. `aqj` CLI Commands
 
-#### A. Membuat Paket dari Resep (`aqj src`)
-Membaca file `template.toml` dari folder resep dan memproses kompilasi hingga menjadi paket `.aqj`:
+#### A. Build a Package from Recipe (`aqj src`)
+Parse a recipe template directory and compile it into a binary `.aqj` package:
 
 ```bash
 cargo run --release -p aqj-cli -- src build aqj-packages/pkgs/hello
 ```
 
-#### B. Menginstall Paket (`aqj install`)
-Menginstall file binary/arsip `.aqj` ke dalam sistem:
+#### B. Install a Package (`aqj install`)
+Install a compiled `.aqj` package archive into the system:
 
 ```bash
 cargo run --release -p aqj-cli -- install hello-2.12.1_1.x86_64.aqj
 ```
 
-#### C. Kueri / Mengecek Paket Terinstall (`aqj query`)
-Melihat daftar paket yang terpasang di database sistem:
+#### C. Query Installed Packages (`aqj query`)
+List all packages currently registered in the database:
 
 ```bash
 cargo run --release -p aqj-cli -- query -l
 ```
 
-Melihat detail paket tertentu:
+Inspect details for a specific package:
 
 ```bash
 cargo run --release -p aqj-cli -- query -i hello
 ```
 
-#### D. Menghapus Paket (`aqj remove`)
-Menghapus paket beserta file-file yang didaftarkannya dari sistem:
+#### D. Remove a Package (`aqj remove`)
+Remove an installed package and its associated files from the system:
 
 ```bash
 cargo run --release -p aqj-cli -- remove hello
@@ -89,9 +89,9 @@ cargo run --release -p aqj-cli -- remove hello
 
 ---
 
-## 📝 Contoh Resep Paket (`template.toml`)
+## 📝 Package Recipe Example (`template.toml`)
 
-Berikut adalah contoh resep pembuatan paket `hello`:
+Here is an example package recipe for `hello`:
 
 ```toml
 [package]
@@ -118,7 +118,7 @@ make DESTDIR="${DESTDIR}" install
 
 ---
 
-## 📄 Lisensi
+## 📄 License
 
-Project ini dilesensikan di bawah lisensi **GNU General Public License v3.0** (`GPL-3.0-or-later`).
-Lihat berkas [LICENSE](LICENSE) untuk informasi lebih rincinya.
+This project is licensed under the **GNU General Public License v3.0** (`GPL-3.0-or-later`).
+See the [LICENSE](LICENSE) file for more details.
