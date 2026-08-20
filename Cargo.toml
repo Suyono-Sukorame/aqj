@@ -14,7 +14,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["AQJ Developers"]
 license = "GPL-3.0-or-later"
-repository = "https://github.com/aqj/aqj"
+repository = "https://github.com/Suyono-Sukorame/aqj"
 
 [workspace.dependencies]
 serde = { version = "1.0", features = ["derive"] }
